@@ -9,11 +9,11 @@ unsigned long last_debounce = 0;
 unsigned long debounce_delay = 2;
 
 int main () {
-	wiringPiSetup ();
-	
-	pinMode (DT_PIN, INPUT);
-	pinMode (CLK_PIN, INPUT);
-	pinMode (SW_PIN, INPUT);
+    wiringPiSetup ();
+
+    pinMode (DT_PIN, INPUT);
+    pinMode (CLK_PIN, INPUT);
+    pinMode (SW_PIN, INPUT);
     
     pullUpDnControl (DT_PIN, PUD_DOWN);
     pullUpDnControl (CLK_PIN, PUD_DOWN);
