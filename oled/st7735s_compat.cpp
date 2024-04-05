@@ -1,15 +1,23 @@
-#include <Arduino.h>
-#include <SPI.h>
 #include "st7735s_compat.h"
+#include "wiringPiSPI.h"
+#include "wiringPi.h"
+#include "stdio.h"
 
-#define CS_PIN    0
-#define RES_PIN   0
-#define DC_PIN    0
-#define MOSI_PIN  0
-#define SCK_PIN   0
+#define CS_PIN    15
+#define RES_PIN   6
+#define DC_PIN    9
+#define MOSI_PIN  11
+#define SCK_PIN   14
 #define BLK_PIN    0
 
+#define SPI_CHANNEL 0
+#define SPI_SPEED 500000 // 500 KHz
+#define SPI_BUFFER_LEN 1 // 1 byte
+
 void SPI_Init(void) {
+    wiringPiSetup();
+    wiringPiSPISetup(SPI_CHANNEL, SPI_SPEED);
+
     pinMode(CS_PIN, OUTPUT);
     pinMode(RES_PIN, OUTPUT);
     pinMode(DC_PIN, OUTPUT);
@@ -19,15 +27,14 @@ void SPI_Init(void) {
 
     digitalWrite(CS_PIN, LOW);
     digitalWrite(RES_PIN, HIGH);
-
-    SPI.begin();
-    SPI.setClockDivider(SPI_CLOCK_DIV2);
 }
 
 void Pin_CS_Low(void) {
+    digitalWrite(CS_PIN, LOW);
 }
 
 void Pin_CS_High(void) {
+    digitalWrite(CS_PIN, HIGH);
 }
 
 void Pin_RES_High(void) {
@@ -53,12 +60,9 @@ void Pin_BLK_Pct(uint8_t pct) {
 }
 
 void SPI_send(uint16_t len, uint8_t *data) {
-	digitalWrite(CS_PIN, LOW);
-
-    while (len--)
-        SPI.transfer(*data++);
-
-    digitalWrite(CS_PIN, HIGH);
+    Pin_CS_Low();
+    wiringPiSPIDataRW(SPI_CHANNEL, data, len);
+    Pin_CS_High();
 }
 
 void SPI_TransmitCmd(uint16_t len, uint8_t *data) {
