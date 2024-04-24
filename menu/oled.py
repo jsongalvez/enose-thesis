@@ -3,6 +3,7 @@
 from luma.core.interface.serial import spi
 from luma.core.render import canvas
 from luma.lcd.device import st7735
+from PIL import Image, ImageDraw, ImageFont
 
 def main():
     with canvas(device) as draw:
