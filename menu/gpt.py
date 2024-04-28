@@ -1,17 +1,40 @@
 #!/usr/bin/env python
 
+
+# For OLED
 from luma.core.interface.serial import spi
 from luma.core.render import canvas
 from luma.lcd.device import st7735
 from PIL import Image, ImageDraw, ImageFont
 from pathlib import Path
 
+# Edit values
+menu_items = ["Train", "Predict", "Fan"]
+current_index = 0
+font_size = 24
+anchor_start = 20 
+anchor_buffer = 20
+
+def draw_menu(draw, font):
+    for i, item in enumerate(menu_items):
+        bbox = draw.textbbox((0, anchor_start), f"{item}", font=font)
+        x0, y0, x1, y1 = bbox
+        if i == current_index:
+            #draw.rectangle((0, anchor_start + i * anchor_buffer, 160, 45 + i * 10), fill="black", outline="black")
+            draw.rectangle((x0, y0, 160, y1), fill="black", outline="black")
+            draw.text((0, anchor_start + i * anchor_buffer), f"{item}", fill="white", font=font)
+        else:
+            draw.text((0, anchor_start + i * anchor_buffer), f"{item}", fill="black", font=font)
+
 def main():
-    image = Image.new("RGB", device.size, "yellow")
-    draw = ImageDraw.Draw(image)
     font_path = Path(__file__).resolve().parent.joinpath('fonts','code2000.ttf')
-    font = ImageFont.truetype(font_path, 16)
-    draw.text((40,40), "Hello World", fill=(255,255,255), font=font)
+    font = ImageFont.truetype(font_path, font_size)
+
+    image = Image.new("RGB", device.size, "white")
+    draw = ImageDraw.Draw(image)
+
+    draw_menu(draw, font)
+
     device.display(image)
     while True:
         pass
