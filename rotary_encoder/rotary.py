@@ -34,19 +34,26 @@ class Rotary:
         GPIO.setboard(4) # Orange Pi One
         GPIO.setmode(GPIO.SOC) # GPIO column in gpio readall
         
-        GPIO.setup(dt_pin_rise, GPIO.IN)
-        GPIO.setup(dt_pin_fall, GPIO.IN)
-        GPIO.setup(clk_pin_rise, GPIO.IN)
-        GPIO.setup(clk_pin_fall, GPIO.IN)
-        GPIO.setup(sw_pin, GPIO.IN)
+        GPIO.setup(self.dt_pin_rise, GPIO.IN)
+        GPIO.setup(self.dt_pin_fall, GPIO.IN)
+        GPIO.setup(self.clk_pin_rise, GPIO.IN)
+        GPIO.setup(self.clk_pin_fall, GPIO.IN)
+        GPIO.setup(self.sw_pin, GPIO.IN)
         
         GPIO.add_event_detect(self.dt_pin_rise, GPIO.RISING, callback=self.rotary_change, bouncetime=4)
         GPIO.add_event_detect(self.dt_pin_fall, GPIO.FALLING, callback=self.rotary_change, bouncetime=4)
         GPIO.add_event_detect(self.clk_pin_rise, GPIO.RISING, callback=self.rotary_change, bouncetime=4)
         GPIO.add_event_detect(self.clk_pin_fall, GPIO.FALLING, callback=self.rotary_change, bouncetime=4)
-        GPIO.add_event_detect(self.sw_pin, GPIO.RISING, callback=sw_change)
+        GPIO.add_event_detect(self.sw_pin, GPIO.RISING, callback=self.sw_change)
 
         self.prev_status = 0b11
+        self.curr_dt = 0
+        self.curr_clk = 0
+
+        self.handlers = []
+
+    def __enter__(self):
+        pass
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         GPIO.cleanup()
@@ -54,18 +61,18 @@ class Rotary:
     def rotary_change(self, pin):
         # Which edge fell
         if pin == self.dt_pin_fall:
-            curr_dt = 0
+            self.curr_dt = 0
         elif pin == self.clk_pin_fall:
-            curr_clk = 0
+            self.curr_clk = 0
         elif pin == self.dt_pin_rise:
-            curr_dt = 1
+            self.curr_dt = 1
         elif pin == self.clk_pin_rise:
-            curr_clk = 1
+            self.curr_clk = 1
         
         # Find way to offload below as scheduled task or something
 
         # 2 bits
-        curr_status = curr_dt << 1 | curr_clk
+        curr_status = self.curr_dt << 1 | self.curr_clk
 
         # ignore repeats
         if self.prev_status == curr_status:
@@ -77,12 +84,21 @@ class Rotary:
         # clockwise
         if transition == 0b1110:
             # add callback
+            self.call_handlers(1)
         
         # counter-clockwise
         if transition == 0b1101:
             # add callback
+            self.call_handlers(2)
 
         self.prev_status = curr_status
 
-    def sw_change(channel):
+    def sw_change(self, pin):
         print("sw_change")
+
+    def add_handler(self, handler):
+        self.handlers.append(handler)
+
+    def call_handlers(self, type):
+        for handler in self.handlers:
+            handler(type)

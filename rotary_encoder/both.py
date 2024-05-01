@@ -5,11 +5,16 @@ import time
 atexit.register(GPIO.cleanup)
 
 #board pins
-dt_pin_rise = 22
-dt_pin_fall = 29
-clk_pin_rise = 37
-clk_pin_fall = 31
-sw_pin = 26
+#dt_pin_rise = 22
+#dt_pin_fall = 29
+#clk_pin_rise = 37
+#clk_pin_fall = 31
+#sw_pin = 26
+dt_pin_rise = 20
+dt_pin_fall = 8
+clk_pin_rise = 2 
+clk_pin_fall = 7 
+sw_pin = 21
 
 #default values
 val_dt = 1
@@ -40,7 +45,7 @@ ctr = 0
 def setup():
     # setup
     GPIO.setboard(4)
-    GPIO.setmode(GPIO.BOARD)
+    GPIO.setmode(GPIO.SOC)
     GPIO.setup(dt_pin_rise, GPIO.IN)
     GPIO.setup(dt_pin_fall, GPIO.IN)
     GPIO.setup(clk_pin_rise, GPIO.IN)
