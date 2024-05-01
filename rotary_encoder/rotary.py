@@ -1,28 +1,13 @@
 import OPi.GPIO as GPIO
+import atexit
 
-#  #board pin (physical)
-#  dt_pin_rise = 22
-#  dt_pin_fall = 29
-#  clk_pin_rise = 37
-#  clk_pin_fall = 31
-#  sw_pin = 26
-#  
-#  #default values
-#  val_dt = 1
-#  val_clk = 1
-#  val_sw = 0
-#  val_dt_prev = val_dt
-#  val_clk_prev = val_clk
-#  val_sw_prev = val_sw
-#  
-#  #channels (GPIO)
-#  CH_DT_RISE = 20
-#  CH_DT_FALL = 8
-#  CH_CLK_RISE = 2
-#  CH_CLK_FALL = 7
-#  CH_SW = 21
+atexit.register(GPIO.cleanup)
 
 class Rotary:
+
+    ROT_CW = 1
+    ROT_CCW = 2
+    SW_PRESS = 3
 
     def __init__(self, dt1, dt2, clk1, clk2, sw):
         self.dt_pin_rise = dt1
@@ -52,12 +37,6 @@ class Rotary:
 
         self.handlers = []
 
-    def __enter__(self):
-        pass
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        GPIO.cleanup()
-
     def rotary_change(self, pin):
         # Which edge fell
         if pin == self.dt_pin_fall:
@@ -83,18 +62,16 @@ class Rotary:
         
         # clockwise
         if transition == 0b1110:
-            # add callback
-            self.call_handlers(1)
+            self.call_handlers(Rotary.ROT_CW)
         
         # counter-clockwise
         if transition == 0b1101:
-            # add callback
-            self.call_handlers(2)
+            self.call_handlers(Rotary.ROT_CCW)
 
         self.prev_status = curr_status
 
     def sw_change(self, pin):
-        print("sw_change")
+        self.call_handlers(Rotary.SW_PRESS)
 
     def add_handler(self, handler):
         self.handlers.append(handler)

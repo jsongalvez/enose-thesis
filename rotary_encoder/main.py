@@ -1,37 +1,22 @@
 from rotary import Rotary
-#import utime as time
 import time
 
-dt_pin_1 = 20
-dt_pin_2 = 8
-clk_pin_1 = 2
-clk_pin_2 = 7
-sw_pin = 21
+rotary =  Rotary(20,8,2,7,21)
+val = 0
 
-with Rotary(20,8,2,7,21) as rot:
-    def rotary_changed(change):
-        print('rotary changed', change)
+def rotary_changed(event):
+    global val
+    if event == Rotary.ROT_CW:
+        val += 1
+        print(val)
+    elif event == Rotary.ROT_CCW:
+        val -= 1
+        print(val)
+    elif event == Rotary.SW_PRESS:
+        print('PRESS')
 
-    rot.add_handler()
+rotary.add_handler(rotary_changed)
 
-    while True:
-        time.sleep(0.1)
-
-
-#  val = 0
-
-#  def rotary_changed(change):
-#      global val
-#      if change == Rotary.ROT_CW:
-#          val = val + 1
-#          print(val)
-#      elif change == Rotary.ROT_CCW:
-#          val = val - 1
-#          print(val)
-#      elif change == Rotary.SW_PRESS:
-#          print('PRESS')
-#      elif change == Rotary.SW_RELEASE:
-#          print('RELEASE')
-#          
-#  rotary.add_handler(rotary_changed)
+while True:
+    time.sleep(0.1)
 
