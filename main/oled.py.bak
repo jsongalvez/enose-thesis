@@ -1,5 +1,3 @@
-import time
-
 # For OLED
 from luma.core.interface.serial import spi
 from luma.core.render import canvas
@@ -20,7 +18,7 @@ def draw_menu(draw, font):
         x0, y0, x1, y1 = bbox
         if i == current_index:
             #draw.rectangle((0, anchor_start + i * anchor_buffer, 160, 45 + i * 10), fill="black", outline="black")
-            draw.rectangle((x0, y0, device.width, y1), fill="black", outline="black")
+            draw.rectangle((x0, y0, 160, y1), fill="black", outline="black")
             draw.text((0, anchor_start + i * anchor_buffer), f"{item}", fill="white", font=font)
         else:
             draw.text((0, anchor_start + i * anchor_buffer), f"{item}", fill="black", font=font)
@@ -35,10 +33,6 @@ def menu():
     draw_menu(draw, font)
 
     device.display(image)
-
-    time.sleep(3)
-
-    device.clear()
     while True:
         pass
     
@@ -46,7 +40,7 @@ def menu():
 if __name__ == "__main__":
     try:
         serial = spi(port=0, device=0, gpio_DC=23, gpio_RST=24)
-        device = st7735(serial, rotate=0, h_offset=1, inverse=True)
+        device = st7735(serial, rotate=0)
         menu()
     except KeyboardInterrupt:
         pass
