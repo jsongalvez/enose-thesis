@@ -27,13 +27,13 @@ def rotary_changed(event):
     global current_index
     if event == Rotary.ROT_CW and current_index < len(menu_items) - 1:
         current_index += 1
+        draw.rectangle((0,0,device.width, device.height), fill="black", outline="black")
         draw_menu(draw, font)
-        device.clear()
         device.display(image)
     if event == Rotary.ROT_CCW and current_index > 0:
         current_index -= 1
+        draw.rectangle((0,0,device.width, device.height), fill="black", outline="black")
         draw_menu(draw, font)
-        device.clear()
         device.display(image)
 
 
