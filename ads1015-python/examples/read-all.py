@@ -3,7 +3,7 @@ import time
 
 from ads1015 import ADS1015
 
-CHANNELS = ["in0/ref", "in1/ref", "in2/ref", "in3/ref"]
+CHANNELS = ["in0/ref", "in1/ref", "in2/ref"] 
 
 print(
     """read-all.py - read all three inputs of the ADC
