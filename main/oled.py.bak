@@ -23,7 +23,7 @@ def draw_menu(draw, font):
         else:
             draw.text((0, anchor_start + i * anchor_buffer), f"{item}", fill="black", font=font)
 
-def menu():
+def main():
     font_path = Path(__file__).resolve().parent.joinpath('fonts','code2000.ttf')
     font = ImageFont.truetype(font_path, font_size)
 
@@ -36,11 +36,10 @@ def menu():
     while True:
         pass
     
-
 if __name__ == "__main__":
     try:
         serial = spi(port=0, device=0, gpio_DC=23, gpio_RST=24)
         device = st7735(serial, rotate=0)
-        menu()
+        main()
     except KeyboardInterrupt:
         pass

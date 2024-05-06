@@ -1,5 +1,6 @@
 import time
 from rotary import Rotary
+import OPi.GPIO as GPIO
 
 # For OLED
 from luma.core.interface.serial import spi
@@ -78,3 +79,5 @@ if __name__ == "__main__":
         main()
     except KeyboardInterrupt:
         pass
+    finally:
+        GPIO.cleanup()
