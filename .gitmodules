@@ -1,0 +1,3 @@
+[submodule "DHT22_Python_OPi"]
+	path = DHT22_Python_OPi
+	url = https://github.com/jsongalvez/DHT22_Python_OPi.git
