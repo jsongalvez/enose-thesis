@@ -17,14 +17,18 @@ ads1 = ADS1115.ADS1115(address=0x48)
 ads2 = ADS1115.ADS1115(address=0x49)
 
 try:
+    # Read and display temperature and humidity once
     while True:
-        # Read temperature and humidity
         result = instance.read()
         if result.is_valid():
             print("Last valid input: " + str(datetime.datetime.now()))
             print("Temperature: %-3.1f C" % result.temperature)
             print("Humidity: %-3.1f %%" % result.humidity)
+            break
+        time.sleep(2)  # Wait 2 seconds before trying again if reading is invalid
 
+    print("\nReading electric nose sensors:")
+    for _ in range(10):  # Read and display 10 lines of sensor data
         # Read electric nose sensors
         MQ2 = ads1.readADCSingleEnded(channel=0, sps=475)
         MQ3 = ads1.readADCSingleEnded(channel=1, sps=475)
@@ -36,17 +40,16 @@ try:
         PWR = ads2.readADCSingleEnded(channel=3, sps=475)
 
         # Print electric nose sensor values
-        print(f"MQ2={MQ2:.0f} mV\t", end='', flush=True)
-        print(f"MQ3={MQ3:.0f} mV\t", end='', flush=True)
-        print(f"MQ4={MQ4:.0f} mV\t", end='', flush=True)
-        print(f"MQ5={MQ5:.0f} mV\t", end='', flush=True)
-        print(f"MQ6={MQ6:.0f} mV\t", end='', flush=True)
-        print(f"MQ8={MQ8:.0f} mV\t", end='', flush=True)
-        print(f"MQ135={MQ135:.0f} mV\t", end='', flush=True)
-        print(f"PWR={PWR:.0f} mV", flush=True)
+        print(f"{MQ2:.0f}", end='', flush=True)
+        print(f"{MQ3:.0f}", end='', flush=True)
+        print(f"{MQ4:.0f}", end='', flush=True)
+        print(f"{MQ5:.0f}", end='', flush=True)
+        print(f"{MQ6:.0f}", end='', flush=True)
+        print(f"{MQ8:.0f}", end='', flush=True)
+        print(f"{MQ135:.0f}", end='', flush=True)
+        print(f"{PWR:.0f}", flush=True)
 
-        # Wait before next reading
-        time.sleep(5)
+        time.sleep(1)  # Wait 1 second between readings
 
 except KeyboardInterrupt:
     print("Cleanup")
