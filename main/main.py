@@ -2,6 +2,7 @@ from rotary import Rotary
 import time
 
 rotary =  Rotary(20,8,2,7,21)
+#rotary = Rotary(2,7,20,8,21)
 val = 0
 
 def rotary_changed(event):
