@@ -19,17 +19,20 @@ class Rotary:
         GPIO.setboard(4) # Orange Pi One
         GPIO.setmode(GPIO.SOC) # GPIO column in gpio readall
         
-        GPIO.setup(self.dt_pin_rise, GPIO.IN)
-        GPIO.setup(self.dt_pin_fall, GPIO.IN)
-        GPIO.setup(self.clk_pin_rise, GPIO.IN)
-        GPIO.setup(self.clk_pin_fall, GPIO.IN)
-        GPIO.setup(self.sw_pin, GPIO.IN)
-        
-        GPIO.add_event_detect(self.dt_pin_rise, GPIO.RISING, callback=self.rotary_change, bouncetime=4)
-        GPIO.add_event_detect(self.dt_pin_fall, GPIO.FALLING, callback=self.rotary_change, bouncetime=4)
-        GPIO.add_event_detect(self.clk_pin_rise, GPIO.RISING, callback=self.rotary_change, bouncetime=4)
-        GPIO.add_event_detect(self.clk_pin_fall, GPIO.FALLING, callback=self.rotary_change, bouncetime=4)
-        GPIO.add_event_detect(self.sw_pin, GPIO.RISING, callback=self.sw_change)
+        try:
+            GPIO.setup(self.dt_pin_rise, GPIO.IN)
+            GPIO.setup(self.dt_pin_fall, GPIO.IN)
+            GPIO.setup(self.clk_pin_rise, GPIO.IN)
+            GPIO.setup(self.clk_pin_fall, GPIO.IN)
+            GPIO.setup(self.sw_pin, GPIO.IN)
+       
+            GPIO.add_event_detect(self.dt_pin_rise, GPIO.RISING, callback=self.rotary_change, bouncetime=4)
+            GPIO.add_event_detect(self.dt_pin_fall, GPIO.FALLING, callback=self.rotary_change, bouncetime=4)
+            GPIO.add_event_detect(self.clk_pin_rise, GPIO.RISING, callback=self.rotary_change, bouncetime=4)
+            GPIO.add_event_detect(self.clk_pin_fall, GPIO.FALLING, callback=self.rotary_change, bouncetime=4)
+            GPIO.add_event_detect(self.sw_pin, GPIO.RISING, callback=self.sw_change)
+        except Exception:
+            pass
 
         self.prev_status = 0b11
         self.curr_dt = 0
