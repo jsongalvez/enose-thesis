@@ -23,7 +23,8 @@ class Rotary:
         self.clk_pin = clk
         self.sw_pin = sw
         GPIO.setboard(4)
-        GPIO.setmode(GPIO.BOARD)
+        # GPIO.setmode(GPIO.BOARD)
+        GPIO.setmode(GPIO.SOC)
         GPIO.setup(self.dt_pin, GPIO.IN)
         GPIO.setup(self.clk_pin, GPIO.IN)
         GPIO.setup(self.sw_pin, GPIO.IN)

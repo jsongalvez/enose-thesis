@@ -9,7 +9,7 @@ class Rotary:
     ROT_CCW = 2
     SW_PRESS = 3
 
-    def __init__(self, dt1, dt2, clk1, clk2, sw):
+    def __init__(self, sw, dt1=None, dt2=None, clk1=None, clk2=None):
         self.dt_pin_rise = dt1
         self.dt_pin_fall = dt2
         self.clk_pin_rise = clk1
@@ -20,17 +20,21 @@ class Rotary:
         GPIO.setmode(GPIO.SOC) # GPIO column in gpio readall
         
         try:
-            GPIO.setup(self.dt_pin_rise, GPIO.IN)
-            GPIO.setup(self.dt_pin_fall, GPIO.IN)
-            GPIO.setup(self.clk_pin_rise, GPIO.IN)
-            GPIO.setup(self.clk_pin_fall, GPIO.IN)
+            if dt1 is not None:
+                GPIO.setup(self.dt_pin_rise, GPIO.IN)
+                GPIO.add_event_detect(self.dt_pin_rise, GPIO.RISING, callback=self.rotary_change, bouncetime=100)
+            if dt2 is not None:
+                GPIO.setup(self.dt_pin_fall, GPIO.IN)
+                GPIO.add_event_detect(self.dt_pin_fall, GPIO.FALLING, callback=self.rotary_change, bouncetime=100)
+            if clk1 is not None:
+                GPIO.setup(self.clk_pin_rise, GPIO.IN)
+                GPIO.add_event_detect(self.clk_pin_rise, GPIO.RISING, callback=self.rotary_change, bouncetime=100)
+            if clk2 is not None:
+                GPIO.setup(self.clk_pin_fall, GPIO.IN)
+                GPIO.add_event_detect(self.clk_pin_fall, GPIO.FALLING, callback=self.rotary_change, bouncetime=100)
+            
             GPIO.setup(self.sw_pin, GPIO.IN)
-       
-            GPIO.add_event_detect(self.dt_pin_rise, GPIO.RISING, callback=self.rotary_change, bouncetime=4)
-            GPIO.add_event_detect(self.dt_pin_fall, GPIO.FALLING, callback=self.rotary_change, bouncetime=4)
-            GPIO.add_event_detect(self.clk_pin_rise, GPIO.RISING, callback=self.rotary_change, bouncetime=4)
-            GPIO.add_event_detect(self.clk_pin_fall, GPIO.FALLING, callback=self.rotary_change, bouncetime=4)
-            GPIO.add_event_detect(self.sw_pin, GPIO.RISING, callback=self.sw_change)
+            GPIO.add_event_detect(self.sw_pin, GPIO.RISING, callback=self.sw_change, bouncetime=300)
         except Exception:
             pass
 
@@ -72,6 +76,7 @@ class Rotary:
             self.call_handlers(Rotary.ROT_CCW)
 
         self.prev_status = curr_status
+        print(curr_status)
 
     def sw_change(self, pin):
         self.call_handlers(Rotary.SW_PRESS)

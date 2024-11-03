@@ -340,15 +340,17 @@ def update_scroll():
         scroll_ctr = current_index
 
 
-def log_data(filepath, target="None"):
+def log_data(filepath, target="Unspecified", sample_id="unspecified_0", sample_brand="Unspecified"):
     print("logging data...", end=" ")
 
     # Get current timestamp
     timestamp = datetime.datetime.now().isoformat(timespec="milliseconds")
     data = sensors.get_values()
 
-    row = [timestamp] + data + [target]
-
+    # Add sample_id and sample_brand to the row
+    row = [timestamp] + data + [target, sample_id, sample_brand]
+    print(row)
+    
     # Append the data to the CSV file
     with open(filepath, "a", newline="") as csvfile:
         writer = csv.writer(csvfile)
@@ -449,6 +451,8 @@ def create_csv(filepath):
                 "temp",
                 "humidity",
                 "target",
+                "sample_id",
+                "sample_brand"
             ]
         )
         print("Success!")
@@ -459,23 +463,57 @@ def main():
     # draw_sensors()
     # rotary.add_handler(rotary_changed)
 
+    
+    # fan.on()
+    fan.off()
+
     global running
     while running:
-        # rotary_changed(Rotary.ROT_CW)
-        # time.sleep(0.5)
-        # rotary_changed(Rotary.ROT_CW)
-        # time.sleep(0.5)
+        # log_data(csv_filepath, target="Bagoong", sample_id="bagoong_0020", sample_brand="UFC")
+        # log_data(csv_filepath, target="Fan", sample_id="bagoong_0020", sample_brand="UFC")
+        # log_data(csv_filepath, target="Bagoong", sample_id="bagoong_0040", sample_brand="Barrio Fiesta")
+        # log_data(csv_filepath, target="Fan", sample_id="bagoong_0040", sample_brand="Barrio Fiesta")
+
+        log_data(csv_filepath, target="Air", sample_id="air_0016", sample_brand="Air")
+
+        # log_data(csv_filepath, target="Achara", sample_id="achara_0020", sample_brand="Market")
+        # log_data(csv_filepath, target="Fan", sample_id="achara_0020", sample_brand="Market")
+        # log_data(csv_filepath, target="Air", sample_id="achara_0001", sample_brand="Market")
+
+        # log_data(csv_filepath, target="Achara", sample_id="achara_0040", sample_brand="Baliwag")
+        # log_data(csv_filepath, target="Fan", sample_id="achara_0040", sample_brand="Baliwag")
+
+        # log_data(csv_filepath, target="Patis", sample_id="patis_0022", sample_brand="Lorins")
+        # log_data(csv_filepath, target="Fan", sample_id="patis_0022", sample_brand="Lorins")
+        # log_data(csv_filepath, target="Patis", sample_id="patis_0042", sample_brand="Silver Swan")
+        # log_data(csv_filepath, target="Fan", sample_id="patis_0042", sample_brand="Silver Swan")
+
+        # log_data(csv_filepath, target="Suka", sample_id="suka_0020", sample_brand="Datu Puti")
+        # log_data(csv_filepath, target="Fan", sample_id="suka_0020", sample_brand="Datu Puti")
+        # log_data(csv_filepath, target="Suka", sample_id="suka_0040", sample_brand="Silver Swan")
+        # log_data(csv_filepath, target="Fan", sample_id="suka_0040", sample_brand="Silver Swan")
+
+
         # rotary_changed(Rotary.ROT_CW)
         # time.sleep(0.5)
         # rotary_changed(Rotary.SW_PRESS)
         # time.sleep(0.5)
         # rotary_changed(Rotary.ROT_CCW)
         # time.sleep(0.5)
-        # rotary_changed(Rotary.ROT_CCW)
-        # time.sleep(0.5)
-        # rotary_changed(Rotary.ROT_CCW)
-        # time.sleep(0.5)
-        time.sleep(0.1)
+        
+
+        # log_data(csv_filepath, target="Toyo", sample_id="toyo_0020", sample_brand="Datu Puti")
+        # log_data(csv_filepath, target="Fan", sample_id="toyo_0020", sample_brand="Datu Puti")
+        # log_data(csv_filepath, target="Toyo", sample_id="toyo_0040", sample_brand="Silver Swan")
+        # log_data(csv_filepath, target="Fan", sample_id="toyo_0040", sample_brand="Silver Swan")
+
+
+
+
+
+
+        time.sleep(1)
+        # time.sleep(0.1)
 
 
 if __name__ == "__main__":

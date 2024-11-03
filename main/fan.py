@@ -16,10 +16,10 @@ class Fan:
         
     def on(self):
         GPIO.output(self.fan_pin, GPIO.HIGH)
-        print("Fan on for 5 seconds...")
-        time.sleep(5)
-        print("Fan off")
-        self.off()
+        # print("Fan on for 5 seconds...")
+        # time.sleep(5)
+        # print("Fan off")
+        # self.off()
         
         
     def off(self):

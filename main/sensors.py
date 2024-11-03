@@ -13,19 +13,26 @@ class Sensors:
 
     def __init__(self):
         GPIO.setboard(4)
-        GPIO.setmode(GPIO.BOARD)
+        GPIO.setmode(GPIO.BCM)
         GPIO.setwarnings(True)
 
-        self.dht22 = dht22.DHT22(pin=7)
+        self.dht = dht22.DHT22(pin=4)
 
         self.ads1 = ADS1115.ADS1115(address=0x48)
         self.ads2 = ADS1115.ADS1115(address=0x49)
 
-    def read_temp_humidity(self):
-        result = self.dht22.read()
-        if result.is_valid():
-            return [result.temperature, result.humidity]
-        return -999, -999
+    def read_temp_humidity(self, retries=100):
+        for _ in range(retries):
+            result = self.dht.read()
+            if result.is_valid():
+                self.temp = result.temperature
+                self.humidity = result.humidity
+                return [self.temp, self.humidity]
+            time.sleep(0.2)
+    
+        self.temp = -999
+        self.humidity = -999
+        return [self.temp, self.humidity]
 
     def read_ads(self):
         readings = []
@@ -60,7 +67,7 @@ class Sensors:
     def get_values(self):
         values = []
         values += self.read_ads()
-        # values += self.read_temp_humidity()
+        values += self.read_temp_humidity()
         return values
 
 
@@ -72,7 +79,6 @@ if __name__ == "__main__":
     ads_readings = sensors.read_ads()
     print("ADS Readings:", ads_readings)
 
-    # You can also test the read_temp_humidity method
     temp, humidity = sensors.read_temp_humidity()
     print(f"Temperature: {temp}°C, Humidity: {humidity}%")
 

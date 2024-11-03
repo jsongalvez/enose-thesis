@@ -41,7 +41,12 @@ sensors = Sensors()
 
 Item = Enum("Item", ["LABEL", "CALLBACK", "SUBMENU", "PARENT_MENU"], module=__name__)
 Menu = Enum("Menu", ["ITEMS", "PARENT"], module=__name__)
-Name = Enum("Name", ["MAIN_MENU", "TRAIN_MENU"])
+Name = Enum("Name", ["MAIN_MENU", "TRAIN_MENU"], module=__name__)
+
+# File settings
+save_directory = "/home/orangepi/Desktop/"
+csv_filename = "sensor_data.csv"
+csv_filepath = os.path.join(save_directory, csv_filename)
 
 # Menu structure with callbacks
 
@@ -51,7 +56,8 @@ menu_structure = {
             {Item.LABEL: "Predict", Item.CALLBACK: lambda: print("Predict selected")},
             {Item.LABEL: "Fan", Item.CALLBACK: lambda: fan.on()},
             {Item.LABEL: "Train", Item.SUBMENU: Name.TRAIN_MENU},
-            {Item.LABEL: "Sensors", Item.CALLBACK: lambda: log_data()},
+            {Item.LABEL: "Sensors", Item.CALLBACK: lambda: draw_sensors()},
+            # {Item.LABEL: "Power", Item.CALLBACK: lambda: print("PWR")},
             # {Item.LABEL: "Reboot", Item.CALLBACK: lambda: os.system("reboot")},
             # {Item.LABEL: "Shutdown", Item.CALLBACK: lambda: os.system("shutdown now")}
         ],
@@ -60,11 +66,20 @@ menu_structure = {
     Name.TRAIN_MENU: {
         Menu.ITEMS: [
             {Item.LABEL: "<< Back", Item.PARENT_MENU: Name.MAIN_MENU},
-            {Item.LABEL: "Bagoong", Item.CALLBACK: lambda: print("Training Bagoong")},
-            {Item.LABEL: "Patis", Item.CALLBACK: lambda: print("Training Patis")},
-            {Item.LABEL: "Toyo", Item.CALLBACK: lambda: print("Training Toyo")},
-            {Item.LABEL: "Suka", Item.CALLBACK: lambda: print("Training Suka")},
-            {Item.LABEL: "Achara", Item.CALLBACK: lambda: print("Training Achara")},
+            {
+                Item.LABEL: "Bagoong",
+                Item.CALLBACK: lambda: log_data(csv_filepath, "Bagoong"),
+            },
+            {
+                Item.LABEL: "Patis",
+                Item.CALLBACK: lambda: log_data(csv_filepath, "Patis"),
+            },
+            {Item.LABEL: "Toyo", Item.CALLBACK: lambda: log_data(csv_filepath, "Toyo")},
+            {Item.LABEL: "Suka", Item.CALLBACK: lambda: log_data(csv_filepath, "Suka")},
+            {
+                Item.LABEL: "Achara",
+                Item.CALLBACK: lambda: log_data(csv_filepath, "Achara"),
+            },
         ],
         Menu.PARENT: Name.MAIN_MENU,
     },
@@ -188,30 +203,54 @@ def update_display():
     device.display(image)
 
 
-def log_data():
+def log_data(filepath, target="None"):
     print("logging data...", end=" ")
 
     # Get current timestamp
     timestamp = datetime.datetime.now().isoformat(timespec="minutes")
     data = sensors.get_values()
 
-    row = [timestamp] + data
+    row = [timestamp] + data + [target]
 
     # Append the data to the CSV file
-    with open("sensor_data.csv", "a", newline="") as csvfile:
+    with open(filepath, "a", newline="") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(row)
 
     print("Success!")
 
 
-def create_csv(filename):
-    if os.path.isfile(filename):
-        print(f"Appending to '{filename}'")
+def draw_sensors():
+    data = sensors.get_values()
+    cumulative_height = 0
+    print(data)
+    print(data[0], data[1])
+    for i, item in enumerate(data):
+        text = f"Sensor {i+1}: {item}"  # Create a text string for each sensor
+        bbox = draw.textbbox((0, 0), text, font=font, anchor="lt")
+        x0, y0, x1, y1 = bbox
+        text_height = y1 - y0
+        draw.text(
+            (x0, y0 + cumulative_height),
+            text,
+            fill="white",
+            font=font,
+            anchor="lt",
+        )
+        cumulative_height += text_height + 5  # Add some padding between lines
+    update_display()
+
+
+def create_csv(filepath):
+    if os.path.isfile(filepath):
+        print(f"Appending to '{filepath}'")
         return
 
-    with open(filename, "w", newline="") as csvfile:
-        print(f"Creating CSV file \"{filename}\"...", end=" ")
+    # Make sure directory exists
+    os.makedirs(os.path.dirname(filepath), exist_ok=True)
+
+    with open(filepath, "w", newline="") as csvfile:
+        print(f'Creating CSV file "{filepath}"...', end=" ")
         writer = csv.writer(csvfile)
         writer.writerow(
             [
@@ -246,12 +285,12 @@ def main():
         time.sleep(0.5)
         rotary_changed(Rotary.SW_PRESS)
         time.sleep(0.5)
-        rotary_changed(Rotary.ROT_CCW)
-        time.sleep(0.5)
-        rotary_changed(Rotary.ROT_CCW)
-        time.sleep(0.5)
-        rotary_changed(Rotary.ROT_CCW)
-        time.sleep(0.5)
+        # rotary_changed(Rotary.ROT_CCW)
+        # time.sleep(0.5)
+        # rotary_changed(Rotary.ROT_CCW)
+        # time.sleep(0.5)
+        # rotary_changed(Rotary.ROT_CCW)
+        # time.sleep(0.5)
         time.sleep(0.1)
 
 
@@ -266,7 +305,8 @@ if __name__ == "__main__":
         image = Image.new("RGB", device.size, "black")
         draw = ImageDraw.Draw(image)
 
-        create_csv("sensor_data.csv")
+        # Set the directory where you want to save the CSV file
+        create_csv(csv_filepath)
 
         main()
     except FileExistsError:
