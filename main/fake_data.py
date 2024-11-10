@@ -4,32 +4,35 @@ import OPi.GPIO as GPIO
 import dht22
 import datetime
 
-# initialize GPIO
-GPIO.setboard(4) # Orange Pi One
+
+GPIO.setboard(4)
 GPIO.setmode(GPIO.BOARD)
 GPIO.setwarnings(True)
 
-# read data using pin 7
+
 instance = dht22.DHT22(pin=7)
 
-# Initialize ADS1115 devices
+
 ads1 = ADS1115.ADS1115(address=0x48)
 ads2 = ADS1115.ADS1115(address=0x49)
 
-try:
-    # Read and display temperature and humidity once
-    while True:
-        result = instance.read()
-        if result.is_valid():
-            print("Last valid input: " + str(datetime.datetime.now()))
-            print("Temperature: %-3.1f C" % result.temperature)
-            print("Humidity: %-3.1f %%" % result.humidity)
-            break
-        time.sleep(2)  # Wait 2 seconds before trying again if reading is invalid
+def read_temp_humidity():
+    result = instance.read()
+    if result.is_valid():
+        return result.temperature, result.humidity
+    return None, None
 
-    print("\nReading electric nose sensors:")
-    for _ in range(10):  # Read and display 10 lines of sensor data
-        # Read electric nose sensors
+try:
+    temp = 0
+    humidity = 0
+    while True:
+        
+        new_temp, new_humidity = read_temp_humidity()
+        if new_temp is not None and new_humidity is not None:
+            temp = new_temp
+            humidity = new_humidity
+
+        
         MQ2 = ads1.readADCSingleEnded(channel=0, sps=475)
         MQ3 = ads1.readADCSingleEnded(channel=1, sps=475)
         MQ4 = ads1.readADCSingleEnded(channel=2, sps=475)
@@ -39,18 +42,11 @@ try:
         MQ135 = ads2.readADCSingleEnded(channel=2, sps=475)
         PWR = ads2.readADCSingleEnded(channel=3, sps=475)
 
-        # Print electric nose sensor values
-        print(f"{MQ2:.0f}", end='', flush=True)
-        print(f"{MQ3:.0f}", end='', flush=True)
-        print(f"{MQ4:.0f}", end='', flush=True)
-        print(f"{MQ5:.0f}", end='', flush=True)
-        print(f"{MQ6:.0f}", end='', flush=True)
-        print(f"{MQ8:.0f}", end='', flush=True)
-        print(f"{MQ135:.0f}", end='', flush=True)
-        print(f"{PWR:.0f}", flush=True)
-
-        time.sleep(1)  # Wait 1 second between readings
+        
+        print(f"{MQ2:4.0f}, {MQ3:4.0f}, {MQ4:4.0f}, {MQ5:4.0f}, {MQ6:4.0f}, {MQ8:4.0f}, {MQ135:4.0f}, {PWR:4.0f}, {temp:5.1f}, {humidity:5.1f}")
+        
+        time.sleep(0.1)
 
 except KeyboardInterrupt:
-    print("Cleanup")
+    print("\nCleanup")
     GPIO.cleanup()
