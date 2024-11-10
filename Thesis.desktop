@@ -1,0 +1,10 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Thesis
+Comment=Starts Thesis program
+Exec=echo "orangepi" | sudo -S python3.8 Jayson/main/oled.py -H
+Icon=gnome-nettool
+Path=/home/orangepi/Desktop
+Terminal=true
+StartupNotify=false
